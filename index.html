@@ -11,7 +11,7 @@
 <style>
 :root{--bg:#0d1117;--surface:#161b22;--s2:#21262d;--border:#30363d;--text:#e6edf3;--muted:#7d8590;--green:#3fb950;--gG:rgba(63,185,80,0.4);--red:#f85149;--gR:rgba(248,81,73,0.4);--yellow:#d29922;--gY:rgba(210,153,34,0.35);--accent:#58a6ff;--r:12px}
 *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
-body{background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;min-height:100dvh;padding:10px 14px 24px;overflow-x:hidden}
+body{background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;min-height:100dvh;padding:10px 14px 28px;overflow-x:hidden}
 body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(rgba(88,166,255,.03) 1px,transparent 1px),linear-gradient(90deg,rgba(88,166,255,.03) 1px,transparent 1px);background-size:40px 40px;pointer-events:none;z-index:0}
 .wrap{position:relative;z-index:1;max-width:480px;margin:0 auto}
 header{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
@@ -19,66 +19,68 @@ header{display:flex;align-items:center;justify-content:space-between;margin-bott
 .logo-icon{width:32px;height:32px;background:linear-gradient(135deg,#1c2a3a,#1f3a5f);border:1px solid rgba(88,166,255,.3);border-radius:9px;display:flex;align-items:center;justify-content:center;box-shadow:0 0 16px rgba(88,166,255,.15);font-size:16px}
 .logo-text{font-family:'JetBrains Mono',monospace;font-size:15px;font-weight:700;background:linear-gradient(135deg,#e6edf3,#58a6ff);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
 .logo-sub{font-size:9px;color:var(--muted);font-family:'JetBrains Mono',monospace}
-.hdr-btns{display:flex;gap:8px}
-.btn-icon{width:36px;height:36px;border-radius:10px;background:var(--surface);border:1px solid var(--border);color:var(--muted);display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all .2s}
-.btn-icon:active{background:var(--s2);color:var(--text);border-color:var(--accent)}
-.btn-icon svg{width:16px;height:16px}
-.btn-icon.spin svg{animation:spin 1s linear infinite}
-@keyframes spin{from{transform:rotate(0)}to{transform:rotate(360deg)}}
-.summary{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:10px 14px;display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;gap:10px}
+.conn{display:flex;align-items:center;gap:6px;font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--muted);background:var(--surface);border:1px solid var(--border);border-radius:20px;padding:6px 10px}
+.conn .dot{width:8px;height:8px;border-radius:50%;background:var(--s2);flex-shrink:0}
+.conn .dot.ok{background:var(--green);box-shadow:0 0 8px var(--gG)}
+.conn .dot.bad{background:var(--red);box-shadow:0 0 8px var(--gR)}
+.conn .dot.chk{background:var(--yellow);animation:py .8s ease-in-out infinite}
+
+.summary{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:10px 14px;display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
 .s-label{font-size:10px;color:var(--muted);font-family:'JetBrains Mono',monospace;letter-spacing:1px;text-transform:uppercase}
-.s-count{font-size:20px;font-weight:700;font-family:'JetBrains Mono',monospace;margin-top:2px}
-.s-count .rdy{color:var(--green)}.s-count .sep{color:var(--border);margin:0 2px}.s-count .cmp{color:var(--yellow)}.s-count .tot{color:var(--muted);font-size:14px}
-.conn{display:flex;align-items:center;gap:6px;font-size:10px;font-family:'JetBrains Mono',monospace;color:var(--muted)}
-.dot{width:8px;height:8px;border-radius:50%;background:var(--s2);flex-shrink:0}
-.dot.ok{background:var(--green);box-shadow:0 0 8px var(--gG)}
-.dot.bad{background:var(--red);box-shadow:0 0 8px var(--gR)}
+.s-count{font-size:22px;font-weight:700;font-family:'JetBrains Mono',monospace;margin-top:2px}
+.s-count .n1{color:var(--green)}.s-count .sep{color:var(--border);margin:0 2px}.s-count .n2{color:var(--muted);font-size:16px}
+.last{font-size:10px;color:var(--muted);font-family:'JetBrains Mono',monospace;margin-top:3px}
+.rbtn{display:flex;align-items:center;gap:7px;background:linear-gradient(135deg,#1c2a3a,#1f3a5f);border:1px solid rgba(88,166,255,.3);border-radius:8px;padding:9px 14px;color:var(--accent);font-size:13px;font-weight:500;cursor:pointer;transition:all .2s}
+.rbtn:active{background:rgba(88,166,255,.15)}
+.rbtn svg{width:14px;height:14px}
+.rbtn.spin svg{animation:spin 1s linear infinite}
+@keyframes spin{from{transform:rotate(0)}to{transform:rotate(360deg)}}
+
 .search{margin-bottom:10px}
-.search input{width:100%;background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:10px 14px;color:var(--text);font-size:14px;outline:none;transition:border-color .2s;font-family:'Inter',sans-serif}
-.search input:focus{border-color:var(--accent)}
-.search input::placeholder{color:#3a4048}
-.list{display:flex;flex-direction:column;gap:6px;margin-bottom:12px}
-.card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:10px 12px;display:flex;align-items:center;gap:10px;transition:border-color .3s,box-shadow .3s,opacity .2s;animation:fadeUp .35s ease both;cursor:pointer;user-select:none}
-.card:active{background:var(--s2)}
-.card.ready{border-color:rgba(63,185,80,.25)}
-.card.compressed{border-color:rgba(210,153,34,.22)}
-.card.running{border-color:rgba(88,166,255,.35);box-shadow:0 0 20px rgba(88,166,255,.08)}
-.card.error{border-color:rgba(248,81,73,.3)}
+.search input{width:100%;background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:10px 12px;color:var(--text);font-size:13px;font-family:'Inter',sans-serif}
+.search input::placeholder{color:var(--muted)}
+.search input:focus{outline:none;border-color:var(--accent)}
+
+.list{display:flex;flex-direction:column;gap:6px;margin-bottom:16px}
+.card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:10px 12px;display:flex;align-items:center;gap:10px;transition:border-color .3s,box-shadow .3s;animation:fadeUp .4s ease both}
+.card.ready{border-color:rgba(63,185,80,.22)}
+.card.running{border-color:rgba(88,166,255,.3);box-shadow:0 0 20px rgba(88,166,255,.06)}
+.card.error{border-color:rgba(248,81,73,.25);box-shadow:0 0 20px rgba(248,81,73,.06)}
+.card.compressed{cursor:pointer}
+.card.compressed:active{background:var(--s2)}
 @keyframes fadeUp{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
-.g-ico{width:38px;height:38px;border-radius:9px;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:19px;background:rgba(88,166,255,.08)}
+
+.g-ico{width:38px;height:38px;border-radius:9px;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:18px;background:var(--s2);border:1px solid var(--border)}
+.g-ico.ready{background:rgba(63,185,80,.1);border-color:rgba(63,185,80,.2)}
+.g-ico.running{background:rgba(88,166,255,.1);border-color:rgba(88,166,255,.25)}
+.g-ico.error{background:rgba(248,81,73,.1);border-color:rgba(248,81,73,.2)}
+
 .g-info{flex:1;min-width:0}
 .g-name{font-size:14px;font-weight:600;line-height:1.25;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.g-meta{font-size:11px;color:var(--muted);margin-top:2px;display:flex;align-items:center;gap:5px;line-height:1.2}
-.g-bar{height:4px;border-radius:2px;background:var(--s2);margin-top:6px;overflow:hidden;display:none}
-.card.running .g-bar{display:block}
-.g-bar-fill{height:100%;background:linear-gradient(90deg,#58a6ff,#79c0ff);border-radius:2px;transition:width .3s}
-.badge{font-size:9px;font-family:'JetBrains Mono',monospace;letter-spacing:.5px;padding:3px 7px;border-radius:6px;flex-shrink:0;white-space:nowrap}
+.g-meta{font-size:11px;color:var(--muted);margin-top:2px;font-family:'JetBrains Mono',monospace;display:flex;align-items:center;gap:6px}
+.g-meta .msg{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+
+.bar{margin-top:6px;height:4px;border-radius:2px;background:var(--s2);overflow:hidden}
+.bar i{display:block;height:100%;background:linear-gradient(90deg,#58a6ff,#79c0ff);border-radius:2px;transition:width .3s ease}
+
+.badge{font-size:9px;font-family:'JetBrains Mono',monospace;letter-spacing:.5px;text-transform:uppercase;padding:3px 7px;border-radius:20px;flex-shrink:0;white-space:nowrap}
 .badge.ready{color:var(--green);background:rgba(63,185,80,.1);border:1px solid rgba(63,185,80,.25)}
-.badge.compressed{color:var(--yellow);background:rgba(210,153,34,.1);border:1px solid rgba(210,153,34,.25)}
-.badge.running{color:var(--accent);background:rgba(88,166,255,.1);border:1px solid rgba(88,166,255,.3)}
+.badge.compressed{color:var(--muted);background:var(--s2);border:1px solid var(--border)}
+.badge.running{color:var(--accent);background:rgba(88,166,255,.1);border:1px solid rgba(88,166,255,.25)}
 .badge.error{color:var(--red);background:rgba(248,81,73,.1);border:1px solid rgba(248,81,73,.25)}
-.empty{text-align:center;padding:40px 20px;color:var(--muted);font-size:13px}
-.empty .big{font-size:34px;margin-bottom:8px}
-.overlay{position:fixed;inset:0;background:rgba(0,0,0,.75);backdrop-filter:blur(4px);z-index:100;display:none;align-items:flex-end}
-.overlay.on{display:flex}
-.sheet{background:var(--surface);border:1px solid var(--border);border-bottom:none;border-radius:20px 20px 0 0;width:100%;max-height:92dvh;overflow-y:auto;padding-bottom:36px;animation:shUp .3s cubic-bezier(.34,1.56,.64,1)}
-@keyframes shUp{from{transform:translateY(100%)}to{transform:translateY(0)}}
-.handle{width:36px;height:4px;background:var(--border);border-radius:2px;margin:12px auto 0}
-.sh-head{display:flex;align-items:center;justify-content:space-between;padding:14px 20px;border-bottom:1px solid var(--border)}
-.sh-title{font-size:15px;font-weight:600}
-.x{width:26px;height:26px;background:var(--s2);border:1px solid var(--border);border-radius:6px;color:var(--muted);display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:13px}
-.sec{padding:15px 20px}.sec+.sec{border-top:1px solid var(--border)}
-.slbl{font-size:10px;color:var(--muted);font-family:'JetBrains Mono',monospace;text-transform:uppercase;letter-spacing:1px;margin-bottom:12px}
-.fg{display:flex;flex-direction:column;gap:10px}
-.fr{display:flex;flex-direction:column;gap:4px}
-.fl{font-size:12px;color:var(--muted);font-weight:500}
-.fi{background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:9px 12px;color:var(--text);font-size:13px;font-family:'JetBrains Mono',monospace;outline:none;transition:border-color .2s;width:100%}
-.fi:focus{border-color:var(--accent)}.fi::placeholder{color:#3a4048}
-.savebtn{width:100%;background:linear-gradient(135deg,#1a4a7a,#1f5c99);border:1px solid rgba(88,166,255,.4);border-radius:10px;padding:13px;color:var(--accent);font-size:14px;font-weight:600;cursor:pointer;font-family:'Inter',sans-serif;margin-top:4px}
-.savebtn:active{background:rgba(88,166,255,.2)}
-.toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:10px 16px;font-size:13px;color:var(--text);z-index:200;opacity:0;transition:opacity .25s;pointer-events:none;max-width:90vw;text-align:center}
-.toast.on{opacity:1}
-footer{text-align:center;font-size:10px;color:var(--muted);font-family:'JetBrains Mono',monospace;opacity:.35;margin-top:4px}
+
+.empty,.offline{background:var(--surface);border:1px dashed var(--border);border-radius:var(--r);padding:28px 18px;text-align:center;color:var(--muted);font-size:13px}
+.offline{border-color:rgba(248,81,73,.25)}
+.offline b{display:block;color:var(--text);font-size:14px;margin-bottom:4px}
+.offline .hint{font-size:11px;margin-top:8px;font-family:'JetBrains Mono',monospace;color:var(--muted)}
+
+footer{text-align:center;font-size:10px;color:var(--muted);font-family:'JetBrains Mono',monospace;padding-top:6px}
+
+@keyframes py{0%,100%{opacity:1}50%{opacity:.3}}
+
+.toast{position:fixed;left:50%;bottom:22px;transform:translateX(-50%) translateY(20px);background:var(--surface);border:1px solid var(--border);color:var(--text);font-size:12px;padding:10px 16px;border-radius:10px;opacity:0;transition:all .25s ease;z-index:200;max-width:90vw;text-align:center}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+.toast.err{border-color:rgba(248,81,73,.35)}
 </style>
 </head>
 <body>
@@ -87,280 +89,249 @@ footer{text-align:center;font-size:10px;color:var(--muted);font-family:'JetBrain
     <div class="logo">
       <div class="logo-icon">🎮</div>
       <div>
-        <div class="logo-text">GG LIBRARY</div>
-        <div class="logo-sub">Xbox 360 · GGn</div>
+        <div class="logo-text">GG Library</div>
+        <div class="logo-sub" id="hostLabel">—</div>
       </div>
     </div>
-    <div class="hdr-btns">
-      <div class="btn-icon" id="refreshBtn" title="Actualizar">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"></polyline><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"></path></svg>
-      </div>
-      <div class="btn-icon" id="settingsBtn" title="Ajustes">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
-      </div>
-    </div>
+    <div class="conn"><span class="dot chk" id="connDot"></span><span id="connText">conectando</span></div>
   </header>
 
   <div class="summary">
     <div>
       <div class="s-label">Juegos</div>
-      <div class="s-count"><span class="rdy" id="cReady">–</span><span class="sep">/</span><span class="cmp" id="cCompressed">–</span><span class="sep">/</span><span class="tot" id="cTotal">–</span></div>
+      <div class="s-count"><span class="n1" id="readyCount">—</span><span class="sep">/</span><span class="n2" id="totalCount">—</span> <span style="font-size:12px;color:var(--muted)">listos</span></div>
+      <div class="last" id="lastCheck">Verificando...</div>
     </div>
-    <div class="conn">
-      <div class="dot" id="connDot"></div>
-      <span id="connLabel">Sin conectar</span>
-    </div>
+    <button class="rbtn" id="rbtn" onclick="refresh(true)">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
+        <polyline points="23 4 23 10 17 10"/>
+        <path d="M20.5 15a9 9 0 1 1-2.5-8.6L23 10"/>
+      </svg>
+      Verificar
+    </button>
   </div>
 
   <div class="search">
-    <input type="text" id="searchInput" placeholder="Buscar juego..." autocomplete="off" spellcheck="false">
+    <input id="q" type="text" placeholder="Buscar juego..." autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" oninput="render()">
   </div>
 
   <div class="list" id="list"></div>
 
-  <footer>GG Library · tocá un juego comprimido para descomprimirlo</footer>
+  <footer id="footer">gg_server —</footer>
 </div>
 
 <div class="toast" id="toast"></div>
 
-<div class="overlay" id="settingsOverlay">
-  <div class="sheet">
-    <div class="handle"></div>
-    <div class="sh-head">
-      <div class="sh-title">Ajustes</div>
-      <div class="x" id="closeSettings">✕</div>
-    </div>
-    <div class="sec">
-      <div class="slbl">Servidor (PC con los juegos)</div>
-      <div class="fg">
-        <div class="fr">
-          <div class="fl">IP / host</div>
-          <input class="fi" id="cHost" placeholder="192.168.1.100" autocomplete="off" spellcheck="false">
-        </div>
-        <div class="fr">
-          <div class="fl">Puerto</div>
-          <input class="fi" id="cPort" type="number" min="1" max="65535" placeholder="9898" autocomplete="off">
-        </div>
-      </div>
-      <button class="savebtn" id="saveSettings">Guardar</button>
-    </div>
-  </div>
-</div>
-
 <script>
-const DEFAULTS = { host: '', port: 9898 };
-let cfg = { ...DEFAULTS };
+// ── Config fija: misma PC/Tailscale que gg_server.py, sin pedir nada ──────
+const SERVER = { host: '100.93.228.17', port: 9898 };
+const AUTO_REFRESH_MS = 20000;   // recarga completa de /api/games
+const PROGRESS_POLL_MS = 1200;   // polling rapido de juegos "running"
+const HTML_VERSION = '1.0';
+
+function base(path) {
+  return `http://${SERVER.host}:${SERVER.port}${path}`;
+}
+
 let games = [];
-let searchTerm = '';
-let pollTimer = null;
-let toastTimer = null;
+let serverVersion = null;
+let lastOk = false;
+let refreshing = false;
 
-function load() {
-  try {
-    const s = localStorage.getItem('gglib_cfg');
-    if (s) cfg = { ...DEFAULTS, ...JSON.parse(s) };
-  } catch (e) {}
-}
-function save() {
-  try { localStorage.setItem('gglib_cfg', JSON.stringify(cfg)); } catch (e) {}
+function fmtSize(bytes) {
+  if (bytes == null) return '';
+  const u = ['B','KB','MB','GB','TB'];
+  let i = 0, n = bytes;
+  while (n >= 1024 && i < u.length - 1) { n /= 1024; i++; }
+  return `${n.toFixed(n < 10 && i > 0 ? 1 : 0)} ${u[i]}`;
 }
 
-function apiUrl(path) {
-  return `http://${cfg.host}:${cfg.port}${path}`;
-}
-
-function showToast(msg, ms = 2200) {
+function showToast(msg, isErr) {
   const t = document.getElementById('toast');
   t.textContent = msg;
-  t.classList.add('on');
-  clearTimeout(toastTimer);
-  toastTimer = setTimeout(() => t.classList.remove('on'), ms);
+  t.className = 'toast show' + (isErr ? ' err' : '');
+  clearTimeout(showToast._h);
+  showToast._h = setTimeout(() => { t.className = 'toast'; }, 2600);
 }
 
-function setConn(ok, label) {
-  document.getElementById('connDot').className = 'dot ' + (ok === null ? '' : (ok ? 'ok' : 'bad'));
-  document.getElementById('connLabel').textContent = label;
+function setConn(state) {
+  // state: 'ok' | 'bad' | 'chk'
+  const dot = document.getElementById('connDot');
+  const txt = document.getElementById('connText');
+  dot.className = 'dot ' + state;
+  txt.textContent = state === 'ok' ? 'online' : state === 'bad' ? 'sin conexión' : 'verificando';
 }
 
-async function fetchJson(path, timeoutMs = 8000) {
+async function apiGet(path) {
   const ctrl = new AbortController();
-  const timer = setTimeout(() => ctrl.abort(), timeoutMs);
+  const to = setTimeout(() => ctrl.abort(), 6000);
   try {
-    const res = await fetch(apiUrl(path), { signal: ctrl.signal, mode: 'cors' });
+    const res = await fetch(base(path), { signal: ctrl.signal, cache: 'no-store', mode: 'cors' });
+    clearTimeout(to);
     if (!res.ok) throw new Error(`HTTP ${res.status}`);
     return await res.json();
-  } finally {
-    clearTimeout(timer);
+  } catch (e) {
+    clearTimeout(to);
+    throw e;
   }
 }
 
-function fmtSize(bytes) {
-  if (!bytes && bytes !== 0) return '';
-  const gb = bytes / (1024 ** 3);
-  if (gb >= 1) return gb.toFixed(1) + ' GB';
-  const mb = bytes / (1024 ** 2);
-  return mb.toFixed(0) + ' MB';
+async function refresh(manual) {
+  if (refreshing) return;
+  refreshing = true;
+  const rbtn = document.getElementById('rbtn');
+  if (manual) rbtn.classList.add('spin');
+  setConn('chk');
+
+  try {
+    const [status, gamesRes] = await Promise.all([
+      apiGet('/api/status'),
+      apiGet('/api/games'),
+    ]);
+    serverVersion = status.version;
+    games = gamesRes.games || [];
+    lastOk = true;
+    setConn('ok');
+  } catch (e) {
+    lastOk = false;
+    setConn('bad');
+  }
+
+  render();
+  updateSummary();
+  refreshing = false;
+  if (manual) rbtn.classList.remove('spin');
+}
+
+function updateSummary() {
+  const ready = games.filter(g => g.status === 'ready').length;
+  document.getElementById('readyCount').textContent = lastOk ? ready : '—';
+  document.getElementById('totalCount').textContent = lastOk ? games.length : '—';
+  document.getElementById('lastCheck').textContent = lastOk
+    ? `Actualizado ${new Date().toLocaleTimeString('es-AR', { hour: '2-digit', minute: '2-digit', second: '2-digit' })}`
+    : 'Sin conexión con el servidor';
+  document.getElementById('hostLabel').textContent = `${SERVER.host}:${SERVER.port}`;
+  document.getElementById('footer').textContent =
+    `gg_server ${serverVersion ? 'v' + serverVersion : '—'} · html v${HTML_VERSION}`;
 }
 
 function statusMeta(g) {
   switch (g.status) {
-    case 'ready':      return { icon: '✅', badge: 'LISTO', cls: 'ready', meta: 'Descomprimido' };
-    case 'compressed':  return { icon: '📦', badge: 'COMPRIMIDO', cls: 'compressed', meta: fmtSize(g.archive_size) || 'Archivo .7z' };
-    case 'running':     return { icon: '⏳', badge: `${g.percent}%`, cls: 'running', meta: g.message || 'Descomprimiendo...' };
-    case 'error':       return { icon: '⚠️', badge: 'ERROR', cls: 'error', meta: g.message || 'Error al descomprimir' };
-    default:            return { icon: '🎮', badge: '', cls: '', meta: '' };
+    case 'ready':      return { icon: '✅', label: 'Listo' };
+    case 'compressed':  return { icon: '📦', label: 'Comprimido' };
+    case 'running':     return { icon: '⏳', label: `${g.percent}%` };
+    case 'error':        return { icon: '⚠️', label: 'Error' };
+    default:             return { icon: '❔', label: g.status };
   }
 }
 
 function render() {
   const list = document.getElementById('list');
-  const term = searchTerm.trim().toLowerCase();
-  const filtered = games.filter(g => !term || g.name.toLowerCase().includes(term));
+  const q = (document.getElementById('q').value || '').trim().toLowerCase();
 
-  if (!games.length) {
-    list.innerHTML = `<div class="empty"><div class="big">🎮</div>No se encontraron juegos<br>en la carpeta configurada</div>`;
-    return;
-  }
-  if (!filtered.length) {
-    list.innerHTML = `<div class="empty"><div class="big">🔍</div>Sin resultados para "${term.replace(/</g,'&lt;')}"</div>`;
-    return;
-  }
-
-  list.innerHTML = filtered.map(g => {
-    const m = statusMeta(g);
-    return `
-      <div class="card ${m.cls}" data-name="${g.name.replace(/"/g,'&quot;')}">
-        <div class="g-ico">${m.icon}</div>
-        <div class="g-info">
-          <div class="g-name">${g.name.replace(/</g,'&lt;')}</div>
-          <div class="g-meta">${m.meta.replace(/</g,'&lt;')}</div>
-          <div class="g-bar"><div class="g-bar-fill" style="width:${g.percent || 0}%"></div></div>
-        </div>
-        <div class="badge ${m.cls}">${m.badge}</div>
+  if (!lastOk && games.length === 0) {
+    list.innerHTML = `
+      <div class="offline">
+        <b>No se pudo conectar con gg_server</b>
+        No hay respuesta de ${SERVER.host}:${SERVER.port}. Chequeá que el servidor
+        este corriendo en la PC y que el celular este en la misma red Tailscale.
+        <div class="hint">Si abriste esta pagina por HTTPS (ej. GitHub Pages), el
+        navegador puede estar bloqueando el pedido HTTP por "contenido mixto".</div>
       </div>`;
-  }).join('');
+    return;
+  }
 
-  list.querySelectorAll('.card').forEach(card => {
-    card.addEventListener('click', () => onCardTap(card.dataset.name));
+  let filtered = games;
+  if (q) filtered = games.filter(g => g.name.toLowerCase().includes(q));
+
+  if (filtered.length === 0) {
+    list.innerHTML = `<div class="empty">${q ? 'Sin resultados para tu busqueda.' : 'No hay juegos en la carpeta todavia.'}</div>`;
+    return;
+  }
+
+  list.innerHTML = '';
+  filtered.forEach(g => {
+    const meta = statusMeta(g);
+    const card = document.createElement('div');
+    card.className = `card ${g.status}`;
+    if (g.status === 'compressed') {
+      card.onclick = () => extract(g.name);
+    }
+
+    const sizeTxt = g.archive_size ? fmtSize(g.archive_size) : '';
+    const metaLine = g.status === 'running'
+      ? `<span class="msg">${g.message || 'Descomprimiendo...'}</span>`
+      : g.status === 'error'
+        ? `<span class="msg">${g.message || 'Fallo la extraccion'}</span>`
+        : sizeTxt;
+
+    card.innerHTML = `
+      <div class="g-ico ${g.status}">${meta.icon}</div>
+      <div class="g-info">
+        <div class="g-name">${g.name}</div>
+        <div class="g-meta">${metaLine || '&nbsp;'}</div>
+        ${g.status === 'running' ? `<div class="bar"><i style="width:${g.percent}%"></i></div>` : ''}
+      </div>
+      <div class="badge ${g.status}">${meta.label}</div>
+    `;
+    list.appendChild(card);
   });
 }
 
-function updateSummary() {
-  const ready = games.filter(g => g.status === 'ready').length;
-  const compressed = games.filter(g => g.status !== 'ready').length;
-  document.getElementById('cReady').textContent = games.length ? ready : '–';
-  document.getElementById('cCompressed').textContent = games.length ? compressed : '–';
-  document.getElementById('cTotal').textContent = games.length ? games.length : '–';
-}
-
-async function loadGames(showSpinner = true) {
-  if (!cfg.host) {
-    setConn(null, 'Configurá el servidor');
-    return;
-  }
-  const btn = document.getElementById('refreshBtn');
-  if (showSpinner) btn.classList.add('spin');
-  try {
-    const data = await fetchJson('/api/games');
-    if (!data.ok) throw new Error(data.error || 'Error desconocido');
-    games = data.games || [];
-    setConn(true, 'Conectado');
-    render();
-    updateSummary();
-    manageAutoPoll();
-  } catch (e) {
-    setConn(false, e.name === 'AbortError' ? 'Timeout' : 'Sin conexión');
-  }
-  if (showSpinner) btn.classList.remove('spin');
-}
-
-function manageAutoPoll() {
-  const anyRunning = games.some(g => g.status === 'running');
-  clearInterval(pollTimer);
-  if (anyRunning) {
-    pollTimer = setInterval(() => loadGames(false), 1800);
-  }
-}
-
-async function onCardTap(name) {
+async function extract(name) {
   const g = games.find(x => x.name === name);
-  if (!g) return;
+  if (!g || g.status !== 'compressed') return;
 
-  if (g.status === 'ready') {
-    showToast(`"${name}" ya está listo para jugar`);
-    return;
-  }
-  if (g.status === 'running') {
-    showToast(`Descomprimiendo "${name}"... ${g.percent}%`);
-    return;
-  }
-
-  showToast(`Descomprimiendo "${name}"...`);
   g.status = 'running';
   g.percent = 0;
+  g.message = 'Iniciando...';
   render();
 
   try {
-    const data = await fetchJson(`/api/extract/${encodeURIComponent(name)}`, 12000);
-    if (!data.ok) {
-      showToast(data.error || 'No se pudo iniciar');
-      await loadGames(false);
+    const res = await apiGet(`/api/extract/${encodeURIComponent(name)}`);
+    if (res.ok === false) {
+      showToast(res.error || 'No se pudo iniciar la extraccion', true);
+      await refresh(false);
       return;
     }
-    manageAutoPoll();
-    if (!pollTimer) pollTimer = setInterval(() => loadGames(false), 1800);
-    await loadGames(false);
+    showToast(`Descomprimiendo "${name}"...`);
   } catch (e) {
-    showToast('Error: ' + (e.name === 'AbortError' ? 'timeout' : e.message));
-    await loadGames(false);
+    showToast('No se pudo contactar al servidor', true);
+    await refresh(false);
   }
 }
 
-// ── Ajustes ──────────────────────────────────────────────────────────────
-function openSettings() {
-  document.getElementById('cHost').value = cfg.host;
-  document.getElementById('cPort').value = cfg.port;
-  document.getElementById('settingsOverlay').classList.add('on');
-}
-function closeSettings() {
-  document.getElementById('settingsOverlay').classList.remove('on');
-}
-function saveSettingsHandler() {
-  const host = document.getElementById('cHost').value.trim();
-  const port = parseInt(document.getElementById('cPort').value, 10);
-  if (!host) { showToast('Ingresá la IP del servidor'); return; }
-  cfg.host = host;
-  if (port > 0 && port < 65536) cfg.port = port;
-  save();
-  closeSettings();
-  loadGames();
-}
+async function pollRunning() {
+  const running = games.filter(g => g.status === 'running');
+  if (running.length === 0) return;
 
-document.getElementById('settingsBtn').addEventListener('click', openSettings);
-document.getElementById('closeSettings').addEventListener('click', closeSettings);
-document.getElementById('settingsOverlay').addEventListener('click', (e) => {
-  if (e.target.id === 'settingsOverlay') closeSettings();
-});
-document.getElementById('saveSettings').addEventListener('click', saveSettingsHandler);
-document.getElementById('refreshBtn').addEventListener('click', () => loadGames());
-document.getElementById('searchInput').addEventListener('input', (e) => {
-  searchTerm = e.target.value;
+  let anyFinished = false;
+  await Promise.all(running.map(async g => {
+    try {
+      const p = await apiGet(`/api/progress/${encodeURIComponent(g.name)}`);
+      if (p.status === 'running') {
+        g.percent = p.percent;
+        g.message = p.message;
+      } else if (p.status === 'done') {
+        anyFinished = true;
+      } else if (p.status === 'error') {
+        g.status = 'error';
+        g.message = p.message;
+        showToast(`Error descomprimiendo "${g.name}"`, true);
+      }
+    } catch (e) { /* se resuelve en el proximo refresh completo */ }
+  }));
+
   render();
-});
-
-document.addEventListener('visibilitychange', () => {
-  if (document.visibilityState === 'visible') loadGames(false);
-});
-
-// Init
-load();
-if (!cfg.host) {
-  setConn(null, 'Configurá el servidor');
-  openSettings();
-} else {
-  loadGames();
+  if (anyFinished) {
+    showToast('Extraccion completada');
+    await refresh(false);
+  }
 }
-setInterval(() => { if (!document.getElementById('settingsOverlay').classList.contains('on')) loadGames(false); }, 30000);
+
+refresh(true);
+setInterval(() => refresh(false), AUTO_REFRESH_MS);
+setInterval(pollRunning, PROGRESS_POLL_MS);
 </script>
 </body>
 </html>
