@@ -259,11 +259,16 @@ function render() {
     }
 
     const sizeTxt = g.archive_size ? fmtSize(g.archive_size) : '';
+    const extractedTxt = g.extracted_at
+      ? `Extraído ${new Date(g.extracted_at).toLocaleString('es-AR', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' })}`
+      : '';
     const metaLine = g.status === 'running'
       ? `<span class="msg">${g.message || 'Descomprimiendo...'}</span>`
       : g.status === 'error'
         ? `<span class="msg">${g.message || 'Fallo la extraccion'}</span>`
-        : sizeTxt;
+        : g.status === 'ready'
+          ? extractedTxt
+          : sizeTxt;
 
     card.innerHTML = `
       <div class="g-ico ${g.status}">${meta.icon}</div>
