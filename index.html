@@ -48,6 +48,8 @@ header{display:flex;align-items:center;justify-content:space-between;margin-bott
 .card.running{border-color:rgba(88,166,255,.3);box-shadow:0 0 20px rgba(88,166,255,.06)}
 .card.error{border-color:rgba(248,81,73,.25);box-shadow:0 0 20px rgba(248,81,73,.06);cursor:pointer}
 .card.error:active{background:var(--s2)}
+.card.pending_ftp{border-color:rgba(210,153,34,.35);box-shadow:0 0 20px rgba(210,153,34,.08);cursor:pointer}
+.card.pending_ftp:active{background:var(--s2)}
 .card.compressed{cursor:pointer}
 .card.compressed:active{background:var(--s2)}
 @keyframes fadeUp{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
@@ -56,6 +58,7 @@ header{display:flex;align-items:center;justify-content:space-between;margin-bott
 .g-ico.ready{background:rgba(63,185,80,.1);border-color:rgba(63,185,80,.2)}
 .g-ico.running{background:rgba(88,166,255,.1);border-color:rgba(88,166,255,.25)}
 .g-ico.error{background:rgba(248,81,73,.1);border-color:rgba(248,81,73,.2)}
+.g-ico.pending_ftp{background:rgba(210,153,34,.1);border-color:rgba(210,153,34,.2)}
 
 .g-info{flex:1;min-width:0}
 .g-name{font-size:14px;font-weight:600;line-height:1.25;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
@@ -70,6 +73,7 @@ header{display:flex;align-items:center;justify-content:space-between;margin-bott
 .badge.compressed{color:var(--muted);background:var(--s2);border:1px solid var(--border)}
 .badge.running{color:var(--accent);background:rgba(88,166,255,.1);border:1px solid rgba(88,166,255,.25)}
 .badge.error{color:var(--red);background:rgba(248,81,73,.1);border:1px solid rgba(248,81,73,.25)}
+.badge.pending_ftp{color:#d29922;background:rgba(210,153,34,.1);border:1px solid rgba(210,153,34,.25)}
 
 .empty,.offline{background:var(--surface);border:1px dashed var(--border);border-radius:var(--r);padding:28px 18px;text-align:center;color:var(--muted);font-size:13px}
 .offline{border-color:rgba(248,81,73,.25)}
@@ -97,6 +101,10 @@ footer{text-align:center;font-size:10px;color:var(--muted);font-family:'JetBrain
     </div>
     <div class="conn"><span class="dot chk" id="connDot"></span><span id="connText">conectando</span></div>
   </header>
+
+  <div class="conn" id="ftpRow" style="width:fit-content;margin-bottom:12px">
+    <span class="dot chk" id="ftpDot"></span><span id="ftpText">Xbox FTP: verificando...</span>
+  </div>
 
   <div class="summary">
     <div>
@@ -140,6 +148,7 @@ let serverVersion = null;
 let lastOk = false;
 let refreshing = false;
 let cardEls = new Map(); // nombre de juego -> elemento .card (para actualizar sin recrear y evitar el parpadeo)
+let xboxFtpOk = null; // null = todavia no se sabe, true/false = ultimo estado conocido
 
 function fmtSize(bytes) {
   if (bytes == null) return '';
@@ -192,6 +201,7 @@ async function refresh(manual) {
       apiGet('/api/games'),
     ]);
     serverVersion = status.version;
+    xboxFtpOk = status.xbox_ftp_ok;
     games = gamesRes.games || [];
     lastOk = true;
     setConn('ok');
@@ -202,8 +212,24 @@ async function refresh(manual) {
 
   render();
   updateSummary();
+  updateFtpIndicator();
   refreshing = false;
   if (manual) rbtn.classList.remove('spin');
+}
+
+function updateFtpIndicator() {
+  const dot = document.getElementById('ftpDot');
+  const text = document.getElementById('ftpText');
+  if (!lastOk || xboxFtpOk === null) {
+    dot.className = 'dot chk';
+    text.textContent = 'Xbox FTP: verificando...';
+  } else if (xboxFtpOk) {
+    dot.className = 'dot ok';
+    text.textContent = 'Xbox FTP: conectada';
+  } else {
+    dot.className = 'dot bad';
+    text.textContent = 'Xbox FTP: sin conexión';
+  }
 }
 
 function updateSummary() {
@@ -223,6 +249,7 @@ function statusMeta(g) {
     case 'ready':      return { icon: '✅', label: 'Listo' };
     case 'compressed':  return { icon: '📦', label: 'Comprimido' };
     case 'running':     return { icon: '⏳', label: `${g.percent}%` };
+    case 'pending_ftp':  return { icon: '📡', label: 'Falta subir' };
     case 'error':        return { icon: '⚠️', label: 'Error' };
     default:             return { icon: '❔', label: g.status };
   }
@@ -278,6 +305,8 @@ function render() {
     card.className = `card ${g.status}`;
     if (g.status === 'compressed') {
       card.onclick = () => extract(g.name);
+    } else if (g.status === 'pending_ftp') {
+      card.onclick = () => retryFtp(g.name);
     } else if (g.status === 'error') {
       card.onclick = () => clearError(g.name);
     } else {
@@ -291,11 +320,13 @@ function render() {
       : '';
     const metaLine = g.status === 'running'
       ? `<span class="msg">${g.message || 'Descomprimiendo...'}</span>`
-      : g.status === 'error'
-        ? `<span class="msg">${g.message || 'Fallo la extraccion'} (tocar para reintentar)</span>`
-        : g.status === 'ready'
-          ? extractedTxt
-          : sizeTxt;
+      : g.status === 'pending_ftp'
+        ? `<span class="msg">${g.message || 'Convertido, falta subir a la Xbox'} (tocar para subir)</span>`
+        : g.status === 'error'
+          ? `<span class="msg">${g.message || 'Fallo la extraccion'} (tocar para reintentar)</span>`
+          : g.status === 'ready'
+            ? extractedTxt
+            : sizeTxt;
 
     card.innerHTML = `
       <div class="g-ico ${g.status}">${meta.icon}</div>
@@ -319,6 +350,28 @@ async function extract(name) {
 
   const sizeTxt = g.archive_size ? ` (${fmtSize(g.archive_size)})` : '';
   if (!confirm(`¿Descomprimir "${name}"${sizeTxt}?`)) return;
+
+  // Chequeo rapido de la Xbox ANTES de arrancar: si el FTP esta caido, la
+  // descompresion y conversion (que pueden tardar varios minutos) van a
+  // terminar sin poder subir nada. Avisamos para que se pueda corregir
+  // antes, pero dejamos seguir si igual quiere arrancarla (el juego va a
+  // quedar como "Falta subir" listo para reintentar la subida despues).
+  let ftpOk = xboxFtpOk;
+  try {
+    const check = await apiGet('/api/ftp_check');
+    ftpOk = check.xbox_ftp_ok;
+    xboxFtpOk = ftpOk;
+    updateFtpIndicator();
+  } catch (e) { /* si el chequeo en si falla, seguimos con el ultimo valor conocido */ }
+
+  if (ftpOk === false) {
+    const proceed = confirm(
+      `No se puede conectar por FTP a la Xbox (192.168.68.73). ` +
+      `Si segu\u00eds, se va a descomprimir y convertir igual, pero va a quedar ` +
+      `"Falta subir" hasta que arregles la conexi\u00f3n. \u00bfQuer\u00e9s continuar igual?`
+    );
+    if (!proceed) return;
+  }
 
   g.status = 'running';
   g.percent = 0;
@@ -347,6 +400,29 @@ async function clearError(name) {
     await apiGet(`/api/clear/${encodeURIComponent(name)}`);
   } catch (e) { /* igual refrescamos abajo */ }
   await refresh(false);
+}
+
+async function retryFtp(name) {
+  const g = games.find(x => x.name === name);
+  if (!g || g.status !== 'pending_ftp') return;
+
+  g.status = 'running';
+  g.percent = 0;
+  g.message = 'Retomando subida a Xbox...';
+  render();
+
+  try {
+    const res = await apiGet(`/api/retry_ftp/${encodeURIComponent(name)}`);
+    if (res.ok === false) {
+      showToast(res.error || 'No se pudo reintentar la subida', true);
+      await refresh(false);
+      return;
+    }
+    showToast(`Retomando subida de "${name}"...`);
+  } catch (e) {
+    showToast('No se pudo contactar al servidor', true);
+    await refresh(false);
+  }
 }
 
 async function pollRunning() {
