@@ -46,7 +46,8 @@ header{display:flex;align-items:center;justify-content:space-between;margin-bott
 .card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:10px 12px;display:flex;align-items:center;gap:10px;transition:border-color .3s,box-shadow .3s;animation:fadeUp .4s ease both}
 .card.ready{border-color:rgba(63,185,80,.22)}
 .card.running{border-color:rgba(88,166,255,.3);box-shadow:0 0 20px rgba(88,166,255,.06)}
-.card.error{border-color:rgba(248,81,73,.25);box-shadow:0 0 20px rgba(248,81,73,.06)}
+.card.error{border-color:rgba(248,81,73,.25);box-shadow:0 0 20px rgba(248,81,73,.06);cursor:pointer}
+.card.error:active{background:var(--s2)}
 .card.compressed{cursor:pointer}
 .card.compressed:active{background:var(--s2)}
 @keyframes fadeUp{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
@@ -257,6 +258,8 @@ function render() {
     card.className = `card ${g.status}`;
     if (g.status === 'compressed') {
       card.onclick = () => extract(g.name);
+    } else if (g.status === 'error') {
+      card.onclick = () => clearError(g.name);
     }
 
     const sizeTxt = g.archive_size ? fmtSize(g.archive_size) : '';
@@ -266,7 +269,7 @@ function render() {
     const metaLine = g.status === 'running'
       ? `<span class="msg">${g.message || 'Descomprimiendo...'}</span>`
       : g.status === 'error'
-        ? `<span class="msg">${g.message || 'Fallo la extraccion'}</span>`
+        ? `<span class="msg">${g.message || 'Fallo la extraccion'} (tocar para reintentar)</span>`
         : g.status === 'ready'
           ? extractedTxt
           : sizeTxt;
@@ -288,6 +291,9 @@ async function extract(name) {
   const g = games.find(x => x.name === name);
   if (!g || g.status !== 'compressed') return;
 
+  const sizeTxt = g.archive_size ? ` (${fmtSize(g.archive_size)})` : '';
+  if (!confirm(`¿Descomprimir "${name}"${sizeTxt}?`)) return;
+
   g.status = 'running';
   g.percent = 0;
   g.message = 'Iniciando...';
@@ -305,6 +311,16 @@ async function extract(name) {
     showToast('No se pudo contactar al servidor', true);
     await refresh(false);
   }
+}
+
+async function clearError(name) {
+  const g = games.find(x => x.name === name);
+  if (!g || g.status !== 'error') return;
+
+  try {
+    await apiGet(`/api/clear/${encodeURIComponent(name)}`);
+  } catch (e) { /* igual refrescamos abajo */ }
+  await refresh(false);
 }
 
 async function pollRunning() {
