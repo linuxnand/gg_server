@@ -139,6 +139,7 @@ let games = [];
 let serverVersion = null;
 let lastOk = false;
 let refreshing = false;
+let cardEls = new Map(); // nombre de juego -> elemento .card (para actualizar sin recrear y evitar el parpadeo)
 
 function fmtSize(bytes) {
   if (bytes == null) return '';
@@ -232,6 +233,7 @@ function render() {
   const q = (document.getElementById('q').value || '').trim().toLowerCase();
 
   if (!lastOk && games.length === 0) {
+    cardEls.clear();
     list.innerHTML = `
       <div class="offline">
         <b>No se pudo conectar con gg_server</b>
@@ -247,21 +249,42 @@ function render() {
   if (q) filtered = games.filter(g => g.name.toLowerCase().includes(q));
 
   if (filtered.length === 0) {
+    cardEls.clear();
     list.innerHTML = `<div class="empty">${q ? 'Sin resultados para tu busqueda.' : 'No hay juegos en la carpeta todavia.'}</div>`;
     return;
   }
 
-  list.innerHTML = '';
+  // Saca del DOM las cartas de juegos que ya no estan en el filtro/listado
+  // (busqueda activa, o el juego desaparecio del scan).
+  const wanted = new Set(filtered.map(g => g.name));
+  for (const [name, el] of cardEls) {
+    if (!wanted.has(name)) {
+      el.remove();
+      cardEls.delete(name);
+    }
+  }
+
   filtered.forEach(g => {
-    const meta = statusMeta(g);
-    const card = document.createElement('div');
+    // Reusa la carta existente si ya la habiamos creado antes, en vez de
+    // destruirla y crear una nueva: asi no se re-dispara la animacion de
+    // aparicion (fadeUp) en cada poll de progreso, que era la causa del
+    // parpadeo durante la descompresion.
+    let card = cardEls.get(g.name);
+    if (!card) {
+      card = document.createElement('div');
+      cardEls.set(g.name, card);
+    }
+
     card.className = `card ${g.status}`;
     if (g.status === 'compressed') {
       card.onclick = () => extract(g.name);
     } else if (g.status === 'error') {
       card.onclick = () => clearError(g.name);
+    } else {
+      card.onclick = null;
     }
 
+    const meta = statusMeta(g);
     const sizeTxt = g.archive_size ? fmtSize(g.archive_size) : '';
     const extractedTxt = g.extracted_at
       ? `Extraído ${new Date(g.extracted_at).toLocaleString('es-AR', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' })}`
@@ -283,6 +306,9 @@ function render() {
       </div>
       <div class="badge ${g.status}">${meta.label}</div>
     `;
+
+    // appendChild sobre un nodo que ya es hijo de list simplemente lo
+    // reordena (no lo destruye ni lo vuelve a crear).
     list.appendChild(card);
   });
 }
