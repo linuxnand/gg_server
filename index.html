@@ -87,6 +87,16 @@ footer{text-align:center;font-size:10px;color:var(--muted);font-family:'JetBrain
 .toast{position:fixed;left:50%;bottom:22px;transform:translateX(-50%) translateY(20px);background:var(--surface);border:1px solid var(--border);color:var(--text);font-size:12px;padding:10px 16px;border-radius:10px;opacity:0;transition:all .25s ease;z-index:200;max-width:90vw;text-align:center}
 .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
 .toast.err{border-color:rgba(248,81,73,.35)}
+.disc-btn{background:var(--s2);border:1px solid var(--border);color:var(--text);border-radius:8px;font-size:14px;line-height:1;padding:6px 8px;flex-shrink:0;cursor:pointer}
+.disc-btn:active{background:var(--border)}
+.modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,.72);z-index:50;padding:14px;align-items:center;justify-content:center}
+.modal.show{display:flex}
+.modal-box{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);width:100%;max-width:760px;max-height:88vh;display:flex;flex-direction:column;overflow:hidden}
+.modal-head{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:10px 12px;border-bottom:1px solid var(--border);font-size:13px}
+.modal-head button{background:var(--s2);border:1px solid var(--border);color:var(--text);border-radius:8px;padding:4px 10px;cursor:pointer}
+.modal-body{overflow:auto;padding:12px}
+.modal-body h4{margin:0 0 6px;font-size:12px;color:var(--accent)}
+.modal-body pre{margin:0 0 16px;font-family:'JetBrains Mono',monospace;font-size:11px;line-height:1.45;white-space:pre;color:var(--text)}
 </style>
 </head>
 <body>
@@ -130,6 +140,12 @@ footer{text-align:center;font-size:10px;color:var(--muted);font-family:'JetBrain
   <footer id="footer">gg_server —</footer>
 </div>
 
+<div class="modal" id="discModal">
+  <div class="modal-box">
+    <div class="modal-head"><b id="discTitle">Discos</b><button id="discClose">Cerrar</button></div>
+    <div class="modal-body" id="discBody"></div>
+  </div>
+</div>
 <div class="toast" id="toast"></div>
 
 <script>
@@ -137,7 +153,7 @@ footer{text-align:center;font-size:10px;color:var(--muted);font-family:'JetBrain
 const SERVER = { host: '100.93.228.17', port: 9898 };
 const AUTO_REFRESH_MS = 20000;   // recarga completa de /api/games
 const PROGRESS_POLL_MS = 1200;   // polling rapido de juegos "running"
-const HTML_VERSION = '1.0';
+const HTML_VERSION = '1.1';
 
 function base(path) {
   return `http://${SERVER.host}:${SERVER.port}${path}`;
@@ -336,13 +352,40 @@ function render() {
         ${g.status === 'running' ? `<div class="bar"><i style="width:${g.percent}%"></i></div>` : ''}
       </div>
       <div class="badge ${g.status}">${meta.label}</div>
+      ${g.has_disc_report ? '<button class="disc-btn" title="Ver estructura de los discos">🔍</button>' : ''}
     `;
+    const dbtn = card.querySelector('.disc-btn');
+    if (dbtn) dbtn.onclick = (ev) => { ev.stopPropagation(); showDiscReport(g.name); };
 
     // appendChild sobre un nodo que ya es hijo de list simplemente lo
     // reordena (no lo destruye ni lo vuelve a crear).
     list.appendChild(card);
   });
 }
+
+async function showDiscReport(name) {
+  const modal = document.getElementById('discModal');
+  const body = document.getElementById('discBody');
+  document.getElementById('discTitle').textContent = name;
+  body.textContent = 'Cargando...';
+  modal.classList.add('show');
+  try {
+    const r = await apiGet('/api/disc_report/' + encodeURIComponent(name));
+    body.textContent = '';
+    (r.discs || []).forEach(d => {
+      const h = document.createElement('h4');
+      h.textContent = d.title;
+      const pre = document.createElement('pre');
+      pre.textContent = d.text;   // textContent: nombres del ISO nunca se interpretan como HTML
+      body.appendChild(h);
+      body.appendChild(pre);
+    });
+  } catch (e) {
+    body.textContent = 'No se pudo cargar el informe de discos (' + e.message + ').';
+  }
+}
+document.getElementById('discClose').onclick = () => document.getElementById('discModal').classList.remove('show');
+document.getElementById('discModal').onclick = (e) => { if (e.target.id === 'discModal') e.target.classList.remove('show'); };
 
 async function extract(name) {
   const g = games.find(x => x.name === name);
